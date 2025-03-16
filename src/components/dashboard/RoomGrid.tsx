@@ -9,6 +9,7 @@ import InteractiveChart from "./InteractiveChart";
 import NotificationCenter, { AlertItem } from "./NotificationCenter";
 import { useTranslation } from "../../hooks/useTranslation";
 import LanguageSwitcher from "./LanguageSwitcher";
+import TemperatureAnimation from "./TemperatureAnimation";
 
 const RoomGrid = () => {
   const { t } = useTranslation();
@@ -145,8 +146,8 @@ const RoomGrid = () => {
   };
 
   return (
-    <div className="w-full max-w-[98vw] mx-auto p-4 bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+    <div className="w-full max-w-[98vw] mx-auto p-4 bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen flex flex-col">
+      <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <h1 className="text-3xl font-bold">
           {t("Tobacco Drying Room Control System")}
         </h1>
@@ -179,14 +180,14 @@ const RoomGrid = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-2">
         {rooms.map((room) => (
           <Card
             key={room.id}
-            className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 bg-white"
+            className="overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-200 bg-white h-[450px]"
           >
-            <CardContent className="p-0">
-              <div className="p-4 border-b border-gray-100">
+            <CardContent className="p-0 h-full">
+              <div className="p-4 border-b border-gray-100 h-full flex flex-col">
                 <div className="flex justify-between items-center mb-2">
                   <h2 className="text-xl font-bold">{t(room.name)}</h2>
                   <div className="flex items-center gap-2">
@@ -204,7 +205,7 @@ const RoomGrid = () => {
                     <span className="text-sm text-gray-600">
                       {t("Temperature")}
                     </span>
-                    <span className="text-2xl font-bold text-orange-600">
+                    <span className="text-2xl font-bold text-orange-600 animate-pulse">
                       {room.temperature}
                     </span>
                   </div>
@@ -212,21 +213,21 @@ const RoomGrid = () => {
                     <span className="text-sm text-gray-600">
                       {t("Humidity")}
                     </span>
-                    <span className="text-2xl font-bold text-blue-600">
+                    <span className="text-2xl font-bold text-blue-600 animate-pulse">
                       {room.humidity}
                     </span>
                   </div>
                 </div>
 
-                <div className="h-[120px] mb-4 bg-gray-50 rounded-lg overflow-hidden">
-                  <InteractiveChart simplified={true} />
+                <div className="flex-grow h-[220px] mb-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg overflow-hidden">
+                  <TemperatureAnimation roomId={room.id} />
                 </div>
 
                 <Button
                   onClick={() => navigateToRoom(room.id)}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 hover:shadow-md"
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 hover:shadow-md transform hover:scale-105"
                 >
-                  <Eye className="h-4 w-4" />
+                  <Eye className="h-4 w-4 animate-pulse" />
                   {t("View Details")}
                 </Button>
               </div>

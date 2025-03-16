@@ -123,7 +123,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-40">
+      <div className="fixed bottom-20 right-4 z-40">
         <Button
           onClick={() => setIsOpen(true)}
           className="rounded-full h-14 w-14 bg-white shadow-lg hover:shadow-xl border border-gray-200 p-0 relative transition-all duration-300 hover:scale-105"
