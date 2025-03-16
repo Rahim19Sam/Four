@@ -123,7 +123,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-40">
+      <div className="fixed bottom-20 right-4 z-40">
         <Button
           onClick={() => setIsOpen(true)}
           className="rounded-full h-14 w-14 bg-white shadow-lg hover:shadow-xl border border-gray-200 p-0 relative transition-all duration-300 hover:scale-105"
@@ -159,6 +159,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   variant="outline"
                   size="sm"
                   onClick={() => setShowHistorical(!showHistorical)}
+                  className="flex items-center gap-1"
                 >
                   {showHistorical ? t("Current Alerts") : t("Alert History")}
                 </Button>
@@ -166,7 +167,9 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({
                   variant="destructive"
                   size="sm"
                   onClick={showHistorical ? handleClearHistory : handleClearAll}
+                  className="flex items-center gap-1"
                 >
+                  <X className="h-4 w-4" />
                   {showHistorical ? t("Clear History") : t("Clear All")}
                 </Button>
               </div>
