@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Switch } from "../ui/switch";
+import { useState } from "react";
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardContent,
   CardFooter,
-} from "../ui/card";
-import { Badge } from "../ui/badge";
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface OperationModeSelectorProps {

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Progress } from "../ui/progress";
 import { Thermometer, Droplets, AlertTriangle } from "lucide-react";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface SensorData {
   id: number;
@@ -72,6 +73,7 @@ const MonitoringPanel = ({
     },
   ],
 }: MonitoringPanelProps) => {
+  const { t } = useTranslation();
   const [alerts, setAlerts] = useState<{ id: string; message: string }[]>([]);
 
   useEffect(() => {
@@ -124,15 +126,15 @@ const MonitoringPanel = ({
   };
 
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-md p-4 w-full">
-      <h2 className="text-xl font-bold mb-4">Real-time Monitoring</h2>
+    <div className="bg-white rounded-lg shadow-sm p-4 w-full border border-gray-100">
+      <h2 className="text-xl font-bold mb-4">{t("Real-time Monitoring")}</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <Card className="bg-gradient-to-br from-white to-gray-50">
+        <Card className="bg-white border border-gray-100">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-lg">
-              <Thermometer className="mr-2 h-5 w-5 text-red-500" />
-              Temperature Monitoring
+              <Thermometer className="mr-2 h-5 w-5 text-red-500 animate-pulse" />
+              {t("Temperature Monitoring")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -142,7 +144,7 @@ const MonitoringPanel = ({
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">{sensor.name}</span>
                     <span
-                      className={`text-sm font-bold ${sensor.value < sensor.minThreshold || sensor.value > sensor.maxThreshold ? "text-red-500" : "text-gray-700"}`}
+                      className={`text-sm font-bold ${sensor.value < sensor.minThreshold || sensor.value > sensor.maxThreshold ? "text-red-500 animate-pulse" : "text-gray-700"}`}
                     >
                       {sensor.value}
                       {sensor.unit}
@@ -159,7 +161,7 @@ const MonitoringPanel = ({
                         sensor.minThreshold,
                         sensor.maxThreshold,
                       )}
-                      className={`h-2 ${getProgressColor(sensor.value, sensor.minThreshold, sensor.maxThreshold)}`}
+                      className={`h-2 transition-all duration-300 ${getProgressColor(sensor.value, sensor.minThreshold, sensor.maxThreshold)}`}
                     />
                     <span className="text-xs text-gray-500">
                       {sensor.maxThreshold}
@@ -172,11 +174,11 @@ const MonitoringPanel = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-white to-gray-50">
+        <Card className="bg-white border border-gray-100">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-lg">
-              <Droplets className="mr-2 h-5 w-5 text-blue-500" />
-              Humidity Monitoring
+              <Droplets className="mr-2 h-5 w-5 text-blue-500 animate-pulse" />
+              {t("Humidity Monitoring")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -186,7 +188,7 @@ const MonitoringPanel = ({
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">{sensor.name}</span>
                     <span
-                      className={`text-sm font-bold ${sensor.value < sensor.minThreshold || sensor.value > sensor.maxThreshold ? "text-red-500" : "text-gray-700"}`}
+                      className={`text-sm font-bold ${sensor.value < sensor.minThreshold || sensor.value > sensor.maxThreshold ? "text-red-500 animate-pulse" : "text-gray-700"}`}
                     >
                       {sensor.value}
                       {sensor.unit}
@@ -203,7 +205,7 @@ const MonitoringPanel = ({
                         sensor.minThreshold,
                         sensor.maxThreshold,
                       )}
-                      className={`h-2 ${getProgressColor(sensor.value, sensor.minThreshold, sensor.maxThreshold)}`}
+                      className={`h-2 transition-all duration-300 ${getProgressColor(sensor.value, sensor.minThreshold, sensor.maxThreshold)}`}
                     />
                     <span className="text-xs text-gray-500">
                       {sensor.maxThreshold}
@@ -220,10 +222,14 @@ const MonitoringPanel = ({
       {alerts.length > 0 && (
         <div className="space-y-2">
           {alerts.map((alert) => (
-            <Alert key={alert.id} variant="destructive">
+            <Alert
+              key={alert.id}
+              variant="destructive"
+              className="animate-pulse"
+            >
               <AlertTriangle className="h-4 w-4" />
-              <AlertTitle>Warning</AlertTitle>
-              <AlertDescription>{alert.message}</AlertDescription>
+              <AlertTitle>{t("Warning")}</AlertTitle>
+              <AlertDescription>{t(alert.message)}</AlertDescription>
             </Alert>
           ))}
         </div>
