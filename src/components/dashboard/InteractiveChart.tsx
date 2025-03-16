@@ -150,16 +150,142 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
     };
   }, []);
 
-  // This would be replaced with actual chart rendering code using Chart.js
+  // Initialize and update Chart.js chart
   useEffect(() => {
     if (chartRef.current) {
-      // In a real implementation, this is where we would initialize and update the Chart.js chart
-      console.log("Chart would be updated with:", {
-        activeTab,
-        timeRange,
-        zoomLevel,
-        data,
-      });
+      // Import Chart.js dynamically to avoid SSR issues
+      const initChart = async () => {
+        try {
+          const {
+            Chart,
+            LineElement,
+            PointElement,
+            LineController,
+            CategoryScale,
+            LinearScale,
+            Title,
+            Tooltip,
+            Legend,
+          } = await import("chart.js");
+          const { Line } = await import("react-chartjs-2");
+
+          // Register required components
+          Chart.register(
+            LineElement,
+            PointElement,
+            LineController,
+            CategoryScale,
+            LinearScale,
+            Title,
+            Tooltip,
+            Legend,
+          );
+
+          // Get the data for the active tab
+          const chartData = data[activeTab as keyof ChartData];
+
+          // Format the data for Chart.js
+          const labels = Object.values(chartData)[0].map((point) => {
+            const date = new Date(point.timestamp);
+            return date.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            });
+          });
+
+          // Create datasets for each sensor
+          const datasets = Object.entries(chartData).map(
+            ([sensorKey, sensorData], index) => {
+              // Define colors for each sensor
+              const colors = [
+                "#3b82f6",
+                "#ef4444",
+                "#22c55e",
+                "#a855f7",
+                "#f59e0b",
+                "#06b6d4",
+              ];
+
+              return {
+                label: `${sensorKey.charAt(0).toUpperCase() + sensorKey.slice(1)}`,
+                data: sensorData.map((point) => point.value),
+                borderColor: colors[index % colors.length],
+                backgroundColor: `${colors[index % colors.length]}33`,
+                borderWidth: 2,
+                pointRadius: 3,
+                pointHoverRadius: 5,
+                tension: 0.4,
+                fill: true,
+              };
+            },
+          );
+
+          // Create the chart configuration
+          const chartConfig = {
+            type: "line",
+            data: {
+              labels,
+              datasets,
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              animation: {
+                duration: 1000,
+                easing: "easeOutQuart",
+              },
+              scales: {
+                x: {
+                  grid: {
+                    color: "rgba(0, 0, 0, 0.05)",
+                  },
+                },
+                y: {
+                  grid: {
+                    color: "rgba(0, 0, 0, 0.05)",
+                  },
+                  beginAtZero: false,
+                },
+              },
+              plugins: {
+                legend: {
+                  position: "bottom",
+                },
+                tooltip: {
+                  backgroundColor: "rgba(255, 255, 255, 0.9)",
+                  titleColor: "#333",
+                  bodyColor: "#666",
+                  borderColor: "#ddd",
+                  borderWidth: 1,
+                  padding: 10,
+                  boxPadding: 5,
+                  usePointStyle: true,
+                  callbacks: {
+                    label: function (context: any) {
+                      const label = context.dataset.label || "";
+                      const value = context.parsed.y;
+                      const unit = activeTab === "temperature" ? "°C" : "%";
+                      return `${label}: ${value.toFixed(1)}${unit}`;
+                    },
+                  },
+                },
+              },
+            },
+          };
+
+          // Create a new chart instance
+          const chartInstance = new Chart(chartRef.current, chartConfig);
+
+          // Clean up on unmount
+          return () => {
+            chartInstance.destroy();
+          };
+        } catch (error) {
+          console.error("Error initializing chart:", error);
+        }
+      };
+
+      initChart();
     }
   }, [activeTab, timeRange, zoomLevel, data]);
 
