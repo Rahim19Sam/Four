@@ -12,12 +12,16 @@ interface RoomCardProps {
   roomId: string;
   roomName: string;
   onFullScreenChart?: (roomId: string) => void;
+  onAlertChange?: (
+    alerts: { id: string; message: string; type: string }[],
+  ) => void;
 }
 
 const RoomCard = ({
   roomId,
   roomName,
   onFullScreenChart = () => {},
+  onAlertChange = () => {},
 }: RoomCardProps) => {
   const [operationMode, setOperationMode] = useState<"manual" | "automatic">(
     "manual",
@@ -177,21 +181,24 @@ const RoomCard = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div className="space-y-3">
+      <CardContent className="p-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+          <div className="space-y-2">
             {/* Monitoring Panel */}
-            <div className="h-[220px] overflow-hidden">
-              <MonitoringPanel />
+            <div className="h-[250px] overflow-hidden">
+              <MonitoringPanel
+                roomName={roomName}
+                onAlertChange={onAlertChange}
+              />
             </div>
 
             {/* Control Panel */}
-            <div className="h-[270px] overflow-auto">
+            <div className="h-[240px] overflow-auto">
               <ControlPanel isManualMode={operationMode === "manual"} />
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-2">
             {/* Operation Mode Selector */}
             <div>
               <OperationModeSelector

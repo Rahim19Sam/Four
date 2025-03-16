@@ -99,45 +99,93 @@ const MonitoringPanel = ({
   >([]);
   const [connectionStatus, setConnectionStatus] = useState<boolean>(true);
 
-  // Simulate sensor data changes
+  // More realistic simulation of sensor data changes
   useEffect(() => {
+    // Create a more realistic simulation with trends
+    let trend = {
+      temp: Math.random() > 0.5 ? 1 : -1, // Start with random trend direction
+      humidity: Math.random() > 0.5 ? 1 : -1,
+      trendDuration: 0,
+      maxDuration: Math.floor(Math.random() * 10) + 5, // 5-15 cycles before changing trend
+    };
+
     const simulationInterval = setInterval(() => {
-      // Randomly update temperature sensors
+      // Update trend duration and possibly change direction
+      trend.trendDuration++;
+      if (trend.trendDuration >= trend.maxDuration) {
+        trend.temp = Math.random() > 0.3 ? -trend.temp : trend.temp; // 70% chance to reverse
+        trend.humidity = Math.random() > 0.3 ? -trend.humidity : trend.humidity;
+        trend.trendDuration = 0;
+        trend.maxDuration = Math.floor(Math.random() * 10) + 5;
+      }
+
+      // Randomly update temperature sensors with trend influence
       setTemperatureSensors((prev) =>
-        prev.map((sensor) => ({
-          ...sensor,
-          value: Math.max(
+        prev.map((sensor, index) => {
+          // Base change influenced by trend direction
+          const baseChange = trend.temp * (0.2 + Math.random() * 0.3);
+          // Add some randomness but keep the trend
+          const randomFactor = Math.random() * 0.4 - 0.2;
+          // Different sensors have slightly different patterns
+          const sensorVariation =
+            Math.sin(Date.now() / (10000 + index * 1000)) * 0.2;
+
+          const newValue = Math.max(
             sensor.minThreshold - 5,
             Math.min(
               sensor.maxThreshold + 5,
-              sensor.value + (Math.random() * 2 - 1) * 0.5,
+              sensor.value + baseChange + randomFactor + sensorVariation,
             ),
-          ),
-        })),
+          );
+
+          return {
+            ...sensor,
+            value: newValue,
+          };
+        }),
       );
 
-      // Randomly update humidity sensors
+      // Randomly update humidity sensors with trend influence
       setHumiditySensors((prev) =>
-        prev.map((sensor) => ({
-          ...sensor,
-          value: Math.max(
+        prev.map((sensor, index) => {
+          // Base change influenced by trend direction
+          const baseChange = trend.humidity * (0.3 + Math.random() * 0.5);
+          // Add some randomness but keep the trend
+          const randomFactor = Math.random() * 0.6 - 0.3;
+          // Different sensors have slightly different patterns
+          const sensorVariation =
+            Math.cos(Date.now() / (12000 + index * 1500)) * 0.3;
+
+          const newValue = Math.max(
             sensor.minThreshold - 5,
             Math.min(
               sensor.maxThreshold + 5,
-              sensor.value + (Math.random() * 2 - 1) * 0.8,
+              sensor.value + baseChange + randomFactor + sensorVariation,
             ),
-          ),
-        })),
+          );
+
+          return {
+            ...sensor,
+            value: newValue,
+          };
+        }),
       );
 
-      // Randomly simulate connection issues (1% chance)
-      if (Math.random() < 0.01) {
+      // Randomly simulate connection issues (0.5% chance)
+      if (Math.random() < 0.005) {
         setConnectionStatus((prev) => !prev);
       }
-    }, 2000);
+
+      // Randomly simulate door opening (0.2% chance)
+      if (Math.random() < 0.002 && !isDoorOpen) {
+        // Simulate door opening for 5-15 seconds
+        const doorOpenDuration = (Math.random() * 10 + 5) * 1000;
+        // This would be handled by the parent component in a real implementation
+      }
+    }, 1000); // Update more frequently for smoother animation
 
     return () => clearInterval(simulationInterval);
-  }, []);
+  }, [isDoorOpen]);
 
   // Check for out-of-range conditions and generate alerts
   useEffect(() => {
