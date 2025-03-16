@@ -9,6 +9,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface OperationModeSelectorProps {
   onModeChange?: (mode: "manual" | "automatic") => void;
@@ -23,6 +24,7 @@ const OperationModeSelector = ({
   manualStatus = "active",
   automaticStatus = "inactive",
 }: OperationModeSelectorProps) => {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<"manual" | "automatic">(currentMode);
 
   const handleModeChange = (checked: boolean) => {
@@ -34,7 +36,9 @@ const OperationModeSelector = ({
   return (
     <Card className="w-full bg-gradient-to-br from-white to-gray-50 border-none shadow-none">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-bold">Operation Mode</CardTitle>
+        <CardTitle className="text-lg font-bold">
+          {t("Operation Mode")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-center justify-between">
@@ -43,16 +47,16 @@ const OperationModeSelector = ({
               <span
                 className={`font-medium ${mode === "manual" ? "text-primary" : "text-gray-500"}`}
               >
-                Manual
+                {t("Manual")}
               </span>
               <div className="mt-1">
                 {manualStatus === "active" && mode === "manual" ? (
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                    <CheckCircle2 className="mr-1 h-3 w-3" /> Active
+                    <CheckCircle2 className="mr-1 h-3 w-3" /> {t("Active")}
                   </Badge>
                 ) : (
                   <Badge variant="outline" className="text-gray-500">
-                    Inactive
+                    {t("Inactive")}
                   </Badge>
                 )}
               </div>
@@ -69,20 +73,20 @@ const OperationModeSelector = ({
               <span
                 className={`font-medium ${mode === "automatic" ? "text-primary" : "text-gray-500"}`}
               >
-                Automatic
+                {t("Automatic")}
               </span>
               <div className="mt-1">
                 {automaticStatus === "active" && mode === "automatic" ? (
                   <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                    <CheckCircle2 className="mr-1 h-3 w-3" /> Active
+                    <CheckCircle2 className="mr-1 h-3 w-3" /> {t("Active")}
                   </Badge>
                 ) : automaticStatus === "error" ? (
                   <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
-                    <AlertCircle className="mr-1 h-3 w-3" /> Error
+                    <AlertCircle className="mr-1 h-3 w-3" /> {t("Error")}
                   </Badge>
                 ) : (
                   <Badge variant="outline" className="text-gray-500">
-                    Inactive
+                    {t("Inactive")}
                   </Badge>
                 )}
               </div>
@@ -91,17 +95,19 @@ const OperationModeSelector = ({
 
           <div className="text-sm text-gray-500">
             {mode === "manual" ? (
-              <p>Manual control of all devices</p>
+              <p>{t("Manual control of all devices")}</p>
             ) : (
-              <p>System maintains target conditions automatically</p>
+              <p>{t("System maintains target conditions automatically")}</p>
             )}
           </div>
         </div>
       </CardContent>
       <CardFooter className="text-xs text-gray-400 pt-0">
         {mode === "automatic"
-          ? "The system will automatically adjust devices to maintain target conditions"
-          : "You have full control over all devices in the drying room"}
+          ? t(
+              "The system will automatically adjust devices to maintain target conditions",
+            )
+          : t("You have full control over all devices in the drying room")}
       </CardFooter>
     </Card>
   );
