@@ -75,7 +75,7 @@ const ControlPanel = ({
   };
 
   return (
-    <Card className="w-full h-full bg-gradient-to-br from-white to-gray-50">
+    <Card className="w-full h-full bg-gradient-to-br from-white to-gray-50 border-none shadow-none">
       <CardHeader>
         <CardTitle className="text-xl font-bold">Control Panel</CardTitle>
       </CardHeader>

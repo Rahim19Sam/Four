@@ -32,7 +32,7 @@ const OperationModeSelector = ({
   };
 
   return (
-    <Card className="w-full bg-gradient-to-br from-white to-gray-50">
+    <Card className="w-full bg-gradient-to-br from-white to-gray-50 border-none shadow-none">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-bold">Operation Mode</CardTitle>
       </CardHeader>

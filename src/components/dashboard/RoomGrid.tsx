@@ -23,10 +23,10 @@ const RoomGrid = () => {
   };
 
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="w-full max-w-[98vw] mx-auto">
+      <div className="grid grid-cols-1 gap-8">
         {rooms.map((room) => (
-          <div key={room.id} className="h-[500px]">
+          <div key={room.id} className="h-[650px]">
             <RoomCard
               roomId={room.id}
               roomName={room.name}

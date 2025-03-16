@@ -128,7 +128,7 @@ const RoomCard = ({
   };
 
   return (
-    <Card className="w-full h-full overflow-hidden bg-gradient-to-br from-white to-gray-50 shadow-md hover:shadow-lg transition-all duration-300">
+    <Card className="w-full h-full overflow-hidden bg-gradient-to-br from-white to-gray-50 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
       <CardHeader className="pb-2 border-b">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -177,16 +177,16 @@ const RoomCard = ({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-3">
-        <div className="grid grid-cols-2 gap-3">
+      <CardContent className="p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div className="space-y-3">
             {/* Monitoring Panel */}
-            <div className="h-[200px] overflow-hidden">
+            <div className="h-[220px] overflow-hidden">
               <MonitoringPanel />
             </div>
 
             {/* Control Panel */}
-            <div className="h-[250px] overflow-auto">
+            <div className="h-[270px] overflow-auto">
               <ControlPanel isManualMode={operationMode === "manual"} />
             </div>
           </div>
@@ -207,7 +207,7 @@ const RoomCard = ({
             </div>
 
             {/* Interactive Chart with fullscreen button */}
-            <div className="h-[300px] relative group">
+            <div className="h-[320px] relative group">
               <div
                 className="absolute top-2 right-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
                 onClick={handleChartClick}

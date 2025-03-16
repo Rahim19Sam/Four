@@ -164,7 +164,7 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
   }, [activeTab, timeRange, zoomLevel, data]);
 
   return (
-    <Card className="w-full h-full bg-gradient-to-br from-white to-gray-50">
+    <Card className="w-full h-full bg-gradient-to-br from-white to-gray-50 border-none shadow-none">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <CardTitle>Historical Data</CardTitle>
