@@ -3,7 +3,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
-import { Thermometer, Droplets, Fan, Power, Clock } from "lucide-react";
+import { Thermometer, Droplets, Fan, Clock } from "lucide-react";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface ControlPanelProps {
   onHeaterToggle?: (index: number, state: boolean) => void;
@@ -24,6 +25,8 @@ const ControlPanel = ({
   onDryingTimeChange = () => {},
   isManualMode = true,
 }: ControlPanelProps) => {
+  const { t } = useTranslation();
+
   // State for device controls
   const [heaters, setHeaters] = useState([false, false]);
   const [airDryer, setAirDryer] = useState(false);
@@ -75,9 +78,11 @@ const ControlPanel = ({
   };
 
   return (
-    <Card className="w-full h-full bg-white">
+    <Card className="w-full h-full bg-white border border-gray-100 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-xl font-bold">Control Panel</CardTitle>
+        <CardTitle className="text-xl font-bold">
+          {t("Control Panel")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -85,11 +90,11 @@ const ControlPanel = ({
           <div
             className={`${!isManualMode ? "opacity-50 pointer-events-none" : ""}`}
           >
-            <h3 className="text-lg font-medium mb-3">Manual Controls</h3>
+            <h3 className="text-lg font-medium mb-3">{t("Manual Controls")}</h3>
             <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
               {/* Heaters */}
               <div className="space-y-2">
-                <p className="text-sm font-medium">Heaters</p>
+                <p className="text-sm font-medium">{t("Heaters")}</p>
                 <div className="flex space-x-2">
                   {heaters.map((active, index) => (
                     <Button
@@ -97,9 +102,9 @@ const ControlPanel = ({
                       variant={active ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleHeaterToggle(index)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 transition-all duration-300 hover:scale-110"
                     >
-                      <Thermometer className="h-4 w-4" />
+                      <Thermometer className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12" />
                       <span>{index + 1}</span>
                     </Button>
                   ))}
@@ -108,21 +113,21 @@ const ControlPanel = ({
 
               {/* Air Dryer */}
               <div className="space-y-2">
-                <p className="text-sm font-medium">Air Dryer</p>
+                <p className="text-sm font-medium">{t("Air Dryer")}</p>
                 <Button
                   variant={airDryer ? "default" : "outline"}
                   size="sm"
                   onClick={handleAirDryerToggle}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 transition-all duration-300 hover:scale-110"
                 >
-                  <Droplets className="h-4 w-4" />
-                  <span>{airDryer ? "ON" : "OFF"}</span>
+                  <Droplets className="h-4 w-4 transition-transform duration-300 group-hover:translate-y-1" />
+                  <span>{airDryer ? t("ON") : t("OFF")}</span>
                 </Button>
               </div>
 
               {/* Fans */}
               <div className="space-y-2">
-                <p className="text-sm font-medium">Fans</p>
+                <p className="text-sm font-medium">{t("Fans")}</p>
                 <div className="flex space-x-2">
                   {fans.map((active, index) => (
                     <Button
@@ -130,40 +135,33 @@ const ControlPanel = ({
                       variant={active ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleFanToggle(index)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 transition-all duration-300 hover:scale-110 group"
                     >
-                      <Fan className="h-4 w-4" />
+                      <Fan className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
                       <span>{index + 1}</span>
                     </Button>
                   ))}
                 </div>
-              </div>
-
-              {/* Emergency Stop */}
-              <div className="space-y-2 col-span-2 md:col-span-3">
-                <Button
-                  variant="destructive"
-                  className="w-full flex items-center justify-center gap-2"
-                >
-                  <Power className="h-4 w-4" />
-                  <span>Emergency Stop</span>
-                </Button>
               </div>
             </div>
           </div>
 
           {/* Target Parameters Section */}
           <div>
-            <h3 className="text-lg font-medium mb-3">Target Parameters</h3>
+            <h3 className="text-lg font-medium mb-3">
+              {t("Target Parameters")}
+            </h3>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
               {/* Target Temperature */}
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <p className="text-sm font-medium">Target Temperature</p>
+                  <p className="text-sm font-medium">
+                    {t("Target Temperature")}
+                  </p>
                   <p className="text-sm font-medium">{targetTemp}°C</p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Thermometer className="h-4 w-4 text-orange-500" />
+                  <Thermometer className="h-4 w-4 text-orange-500 animate-pulse" />
                   <Slider
                     value={[targetTemp]}
                     min={20}
@@ -182,7 +180,7 @@ const ControlPanel = ({
                     }
                     min={20}
                     max={100}
-                    className="w-20 h-8"
+                    className="w-20 h-8 transition-all duration-300 focus:ring-2 focus:ring-primary focus:scale-105"
                   />
                   <span className="text-sm self-center">°C</span>
                 </div>
@@ -191,11 +189,11 @@ const ControlPanel = ({
               {/* Target Humidity */}
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <p className="text-sm font-medium">Target Humidity</p>
+                  <p className="text-sm font-medium">{t("Target Humidity")}</p>
                   <p className="text-sm font-medium">{targetHumidity}%</p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Droplets className="h-4 w-4 text-blue-500" />
+                  <Droplets className="h-4 w-4 text-blue-500 animate-pulse" />
                   <Slider
                     value={[targetHumidity]}
                     min={10}
@@ -216,7 +214,7 @@ const ControlPanel = ({
                     }
                     min={10}
                     max={90}
-                    className="w-20 h-8"
+                    className="w-20 h-8 transition-all duration-300 focus:ring-2 focus:ring-primary focus:scale-105"
                   />
                   <span className="text-sm self-center">%</span>
                 </div>
@@ -225,11 +223,13 @@ const ControlPanel = ({
               {/* Drying Time */}
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <p className="text-sm font-medium">Drying Time</p>
-                  <p className="text-sm font-medium">{dryingTime} hours</p>
+                  <p className="text-sm font-medium">{t("Drying Time")}</p>
+                  <p className="text-sm font-medium">
+                    {dryingTime} {t("hours")}
+                  </p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <Clock className="h-4 w-4 text-gray-500" />
+                  <Clock className="h-4 w-4 text-gray-500 animate-pulse" />
                   <Slider
                     value={[dryingTime]}
                     min={1}
@@ -248,9 +248,9 @@ const ControlPanel = ({
                     }
                     min={1}
                     max={72}
-                    className="w-20 h-8"
+                    className="w-20 h-8 transition-all duration-300 focus:ring-2 focus:ring-primary focus:scale-105"
                   />
-                  <span className="text-sm self-center">hours</span>
+                  <span className="text-sm self-center">{t("hours")}</span>
                 </div>
               </div>
             </div>

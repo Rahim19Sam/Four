@@ -34,7 +34,7 @@ const AlertNotification = ({
   };
 
   return (
-    <div className="fixed top-4 right-4 z-50 w-96 shadow-lg rounded-md overflow-hidden bg-white">
+    <div className="fixed top-4 right-4 z-50 w-96 shadow-lg rounded-md overflow-hidden bg-white animate-in slide-in-from-right duration-300">
       <Alert className={`border-l-4 ${alertStyles[type]}`}>
         <div className="flex justify-between items-start">
           <div className="flex items-start">
