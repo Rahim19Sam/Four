@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "../ui/switch";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+} from "../ui/card";
+import { Badge } from "../ui/badge";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 
 interface OperationModeSelectorProps {
@@ -32,7 +32,7 @@ const OperationModeSelector = ({
   };
 
   return (
-    <Card className="w-full bg-white">
+    <Card className="w-full bg-gradient-to-br from-white to-gray-50">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg font-bold">Operation Mode</CardTitle>
       </CardHeader>

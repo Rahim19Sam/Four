@@ -124,11 +124,11 @@ const MonitoringPanel = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 w-full">
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-md p-4 w-full">
       <h2 className="text-xl font-bold mb-4">Real-time Monitoring</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <Card>
+        <Card className="bg-gradient-to-br from-white to-gray-50">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-lg">
               <Thermometer className="mr-2 h-5 w-5 text-red-500" />
@@ -172,7 +172,7 @@ const MonitoringPanel = ({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-white to-gray-50">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center text-lg">
               <Droplets className="mr-2 h-5 w-5 text-blue-500" />

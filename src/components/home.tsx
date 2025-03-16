@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Header from "./dashboard/Header";
-import MonitoringPanel from "./dashboard/MonitoringPanel";
-import ControlPanel from "./dashboard/ControlPanel";
-import OperationModeSelector from "./dashboard/OperationModeSelector";
-import InteractiveChart from "./dashboard/InteractiveChart";
+import RoomGrid from "./dashboard/RoomGrid";
 import AlertNotification from "./dashboard/AlertNotification";
 
 const Home = () => {
-  const [operationMode, setOperationMode] = useState<"manual" | "automatic">(
-    "manual",
-  );
   const [showAlert, setShowAlert] = useState(false);
   const [alertInfo, setAlertInfo] = useState({
     title: "Temperature Alert",
@@ -27,47 +21,18 @@ const Home = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleModeChange = (mode: "manual" | "automatic") => {
-    setOperationMode(mode);
-  };
-
   const handleAlertClose = () => {
     setShowAlert(false);
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 p-4 md:p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <Header />
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column */}
-          <div className="space-y-6">
-            {/* Monitoring Panel */}
-            <MonitoringPanel />
-
-            {/* Control Panel */}
-            <ControlPanel isManualMode={operationMode === "manual"} />
-          </div>
-
-          {/* Right Column */}
-          <div className="space-y-6">
-            {/* Operation Mode Selector */}
-            <OperationModeSelector
-              currentMode={operationMode}
-              onModeChange={handleModeChange}
-              manualStatus={operationMode === "manual" ? "active" : "inactive"}
-              automaticStatus={
-                operationMode === "automatic" ? "active" : "inactive"
-              }
-            />
-
-            {/* Interactive Chart */}
-            <InteractiveChart />
-          </div>
-        </div>
+        {/* Room Grid */}
+        <RoomGrid />
 
         {/* Alert Notification */}
         {showAlert && (

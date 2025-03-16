@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "../ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { ZoomIn, ZoomOut, MoveHorizontal, RefreshCw } from "lucide-react";
 
 interface DataPoint {
@@ -96,7 +96,10 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
   const [activeTab, setActiveTab] = useState("temperature");
   const [timeRange, setTimeRange] = useState("24h");
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const chartRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
   const handleTimeRangeChange = (value: string) => {
     setTimeRange(value);
@@ -115,6 +118,38 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
     onRefresh();
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (zoomLevel > 1) {
+      setIsDragging(true);
+      setDragStart({ x: e.clientX, y: e.clientY });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (isDragging && zoomLevel > 1) {
+      const dx = (e.clientX - dragStart.x) / zoomLevel;
+      const dy = (e.clientY - dragStart.y) / zoomLevel;
+      setPanOffset((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+      setDragStart({ x: e.clientX, y: e.clientY });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Add event listeners for mouse up outside the component
+  useEffect(() => {
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener("mouseup", handleGlobalMouseUp);
+    return () => {
+      window.removeEventListener("mouseup", handleGlobalMouseUp);
+    };
+  }, []);
+
   // This would be replaced with actual chart rendering code using Chart.js
   useEffect(() => {
     if (chartRef.current) {
@@ -129,7 +164,7 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
   }, [activeTab, timeRange, zoomLevel, data]);
 
   return (
-    <Card className="w-full h-full bg-white">
+    <Card className="w-full h-full bg-gradient-to-br from-white to-gray-50">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <CardTitle>Historical Data</CardTitle>
@@ -170,11 +205,15 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
           <TabsContent value="temperature" className="w-full">
             <div
               ref={chartRef}
-              className="w-full h-[300px] bg-gray-50 rounded-md border border-gray-200 relative overflow-hidden"
+              className="w-full h-[300px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-md border border-gray-200 relative overflow-hidden"
               style={{
-                transform: `scale(${zoomLevel})`,
+                transform: `scale(${zoomLevel}) translate(${panOffset.x}px, ${panOffset.y}px)`,
                 transformOrigin: "center center",
+                transition: isDragging ? "none" : "transform 0.2s ease-out",
               }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
             >
               {/* Placeholder for the temperature chart */}
               <div className="absolute inset-0 flex items-center justify-center text-gray-400">
@@ -211,11 +250,15 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
           </TabsContent>
           <TabsContent value="humidity" className="w-full">
             <div
-              className="w-full h-[300px] bg-gray-50 rounded-md border border-gray-200 relative overflow-hidden"
+              className="w-full h-[300px] bg-gradient-to-br from-gray-50 to-gray-100 rounded-md border border-gray-200 relative overflow-hidden"
               style={{
-                transform: `scale(${zoomLevel})`,
+                transform: `scale(${zoomLevel}) translate(${panOffset.x}px, ${panOffset.y}px)`,
                 transformOrigin: "center center",
+                transition: isDragging ? "none" : "transform 0.2s ease-out",
               }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
             >
               {/* Placeholder for the humidity chart */}
               <div className="absolute inset-0 flex items-center justify-center text-gray-400">

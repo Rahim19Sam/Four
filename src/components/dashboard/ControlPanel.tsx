@@ -75,7 +75,7 @@ const ControlPanel = ({
   };
 
   return (
-    <Card className="w-full h-full bg-white">
+    <Card className="w-full h-full bg-gradient-to-br from-white to-gray-50">
       <CardHeader>
         <CardTitle className="text-xl font-bold">Control Panel</CardTitle>
       </CardHeader>
@@ -143,7 +143,7 @@ const ControlPanel = ({
               <div className="space-y-2 col-span-2 md:col-span-3">
                 <Button
                   variant="destructive"
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full flex items-center justify-center gap-2 transition-all duration-300 hover:scale-105"
                 >
                   <Power className="h-4 w-4" />
                   <span>Emergency Stop</span>
