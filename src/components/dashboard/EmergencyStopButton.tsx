@@ -6,11 +6,13 @@ import { useTranslation } from "../../hooks/useTranslation";
 interface EmergencyStopButtonProps {
   onClick?: (isActive: boolean) => void;
   initialState?: boolean;
+  className?: string;
 }
 
 const EmergencyStopButton = ({
   onClick = () => {},
   initialState = false,
+  className = "",
 }: EmergencyStopButtonProps) => {
   const { t } = useTranslation();
   const [isActive, setIsActive] = useState(initialState);
@@ -26,7 +28,7 @@ const EmergencyStopButton = ({
       <Button
         variant={isActive ? "destructive" : "default"}
         size="icon"
-        className={`h-16 w-16 rounded-full shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl ${isActive ? "bg-red-600 hover:bg-red-700 animate-pulse-slow" : "bg-green-600 hover:bg-green-700"} border-4 border-white`}
+        className={`h-16 w-16 rounded-full shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl ${isActive ? "bg-red-600 hover:bg-red-700 animate-pulse-slow" : "bg-green-600 hover:bg-green-700"} border-4 border-white ${className}`}
         onClick={handleClick}
       >
         <Power className={`h-8 w-8 ${isActive ? "animate-pulse" : ""}`} />
