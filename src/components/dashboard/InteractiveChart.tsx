@@ -10,6 +10,7 @@ import {
 } from "../ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { ZoomIn, ZoomOut, MoveHorizontal, RefreshCw } from "lucide-react";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface DataPoint {
   timestamp: string;
@@ -93,6 +94,7 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
   onTimeRangeChange = () => {},
   onRefresh = () => {},
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("temperature");
   const [timeRange, setTimeRange] = useState("24h");
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -158,22 +160,20 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
         try {
           const {
             Chart,
-            LineElement,
-            PointElement,
-            LineController,
+            BarElement,
+            BarController,
             CategoryScale,
             LinearScale,
             Title,
             Tooltip,
             Legend,
           } = await import("chart.js");
-          const { Line } = await import("react-chartjs-2");
+          const { Bar } = await import("react-chartjs-2");
 
           // Register required components
           Chart.register(
-            LineElement,
-            PointElement,
-            LineController,
+            BarElement,
+            BarController,
             CategoryScale,
             LinearScale,
             Title,
@@ -209,20 +209,19 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
               return {
                 label: `${sensorKey.charAt(0).toUpperCase() + sensorKey.slice(1)}`,
                 data: sensorData.map((point) => point.value),
+                backgroundColor: colors[index % colors.length],
                 borderColor: colors[index % colors.length],
-                backgroundColor: `${colors[index % colors.length]}33`,
-                borderWidth: 2,
-                pointRadius: 3,
-                pointHoverRadius: 5,
-                tension: 0.4,
-                fill: true,
+                borderWidth: 1,
+                borderRadius: 4,
+                barPercentage: 0.8,
+                categoryPercentage: 0.7,
               };
             },
           );
 
           // Create the chart configuration
           const chartConfig = {
-            type: "line",
+            type: "bar",
             data: {
               labels,
               datasets,
@@ -293,7 +292,7 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
     <Card className="w-full h-full bg-gradient-to-br from-white to-gray-50 border-none shadow-none">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle>Historical Data</CardTitle>
+          <CardTitle>{t("Historical Data")}</CardTitle>
           <div className="flex items-center space-x-2">
             <Select value={timeRange} onValueChange={handleTimeRangeChange}>
               <SelectTrigger className="w-[120px]">
@@ -325,8 +324,8 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
       <CardContent>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="mb-4">
-            <TabsTrigger value="temperature">Temperature</TabsTrigger>
-            <TabsTrigger value="humidity">Humidity</TabsTrigger>
+            <TabsTrigger value="temperature">{t("Temperature")}</TabsTrigger>
+            <TabsTrigger value="humidity">{t("Humidity")}</TabsTrigger>
           </TabsList>
           <TabsContent value="temperature" className="w-full">
             <div

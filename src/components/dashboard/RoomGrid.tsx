@@ -10,15 +10,17 @@ import NotificationCenter, { AlertItem } from "./NotificationCenter";
 import { useTranslation } from "../../hooks/useTranslation";
 import LanguageSwitcher from "./LanguageSwitcher";
 import TemperatureAnimation from "./TemperatureAnimation";
+import AlertNotification from "./AlertNotification";
 
 const RoomGrid = () => {
-  const { t } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
   const navigate = useNavigate();
   const [fullScreenChartRoom, setFullScreenChartRoom] = useState<string | null>(
     null,
   );
   const [systemAlerts, setSystemAlerts] = useState<AlertItem[]>([]);
   const [showNotificationTable, setShowNotificationTable] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
 
   const rooms = [
     {
@@ -145,6 +147,11 @@ const RoomGrid = () => {
     }
   };
 
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    setShowAlert(true);
+  };
+
   return (
     <div className="w-full max-w-[98vw] mx-auto p-4 bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen flex flex-col">
       <div className="flex justify-between items-center mb-4 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
@@ -152,7 +159,10 @@ const RoomGrid = () => {
           {t("Tobacco Drying Room Control System")}
         </h1>
         <div className="flex items-center gap-4">
-          <LanguageSwitcher />
+          <LanguageSwitcher
+            currentLanguage={language}
+            onLanguageChange={handleLanguageChange}
+          />
           <Button
             onClick={() => setShowNotificationTable(true)}
             className="relative flex items-center gap-2 bg-white text-gray-800 hover:bg-gray-100 border border-gray-200"
@@ -326,6 +336,17 @@ const RoomGrid = () => {
         alerts={systemAlerts}
         onDismissAlert={handleDismissAlert}
       />
+
+      {/* Language Change Alert */}
+      {showAlert && (
+        <AlertNotification
+          title={t("Language Changed")}
+          message={t("The interface language has been updated successfully.")}
+          type="info"
+          onClose={() => setShowAlert(false)}
+          isVisible={showAlert}
+        />
+      )}
     </div>
   );
 };

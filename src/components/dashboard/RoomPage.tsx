@@ -15,7 +15,7 @@ import { useTranslation } from "../../hooks/useTranslation";
 const RoomPage = () => {
   const { roomId } = useParams<{ roomId: string }>();
   const navigate = useNavigate();
-  const { t, language } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
   const [operationMode, setOperationMode] = useState<"manual" | "automatic">(
     "manual",
   );
@@ -323,15 +323,17 @@ const RoomPage = () => {
           initialState={isEmergencyStop}
         />
 
-        {/* Alert Notification */}
+        {/* Alert Notification - Fixed position in the top-right corner */}
         {showAlert && (
-          <AlertNotification
-            title={t(alertInfo.title)}
-            message={t(alertInfo.message)}
-            type={alertInfo.type}
-            onClose={handleAlertClose}
-            isVisible={showAlert}
-          />
+          <div className="fixed top-4 right-4 z-50">
+            <AlertNotification
+              title={t(alertInfo.title)}
+              message={t(alertInfo.message)}
+              type={alertInfo.type}
+              onClose={handleAlertClose}
+              isVisible={showAlert}
+            />
+          </div>
         )}
       </div>
     </div>

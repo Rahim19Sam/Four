@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { Save, Upload, Download, Maximize2 } from "lucide-react";
+import { Save, Upload, Download, Maximize2, Play, Power } from "lucide-react";
 import MonitoringPanel from "./MonitoringPanel";
 import ControlPanel from "./ControlPanel";
 import OperationModeSelector from "./OperationModeSelector";
@@ -26,6 +26,8 @@ const RoomCard = ({
   const [operationMode, setOperationMode] = useState<"manual" | "automatic">(
     "manual",
   );
+  const [isAutoPlay, setIsAutoPlay] = useState(false);
+  const [isHardStop, setIsHardStop] = useState(false);
 
   // Load data from localStorage on component mount
   React.useEffect(() => {
@@ -34,6 +36,8 @@ const RoomCard = ({
       try {
         const parsedData = JSON.parse(savedData);
         setOperationMode(parsedData.operationMode || "manual");
+        setIsAutoPlay(parsedData.isAutoPlay || false);
+        setIsHardStop(parsedData.isHardStop || false);
         // You would also load other room-specific state here
       } catch (e) {
         console.error("Error loading saved room data", e);
@@ -50,6 +54,8 @@ const RoomCard = ({
     // Save current room state to localStorage
     const roomData = {
       operationMode,
+      isAutoPlay,
+      isHardStop,
       // Add other room-specific state here
     };
     localStorage.setItem(`room-${roomId}`, JSON.stringify(roomData));
@@ -61,6 +67,8 @@ const RoomCard = ({
       try {
         const parsedData = JSON.parse(savedData);
         setOperationMode(parsedData.operationMode || "manual");
+        setIsAutoPlay(parsedData.isAutoPlay || false);
+        setIsHardStop(parsedData.isHardStop || false);
         // You would also load other room-specific state here
       } catch (e) {
         console.error("Error loading backup data", e);
@@ -129,6 +137,24 @@ const RoomCard = ({
     if (currentData) {
       localStorage.setItem(`room-${roomId}-backup`, currentData);
     }
+  };
+
+  const handleAutoPlayToggle = () => {
+    const newAutoPlayState = !isAutoPlay;
+    setIsAutoPlay(newAutoPlayState);
+    if (newAutoPlayState) {
+      setIsHardStop(false);
+    }
+    saveRoomData();
+  };
+
+  const handleHardStopToggle = () => {
+    const newHardStopState = !isHardStop;
+    setIsHardStop(newHardStopState);
+    if (newHardStopState) {
+      setIsAutoPlay(false);
+    }
+    saveRoomData();
   };
 
   return (
@@ -230,6 +256,32 @@ const RoomCard = ({
               <div className="h-full cursor-pointer" onClick={handleChartClick}>
                 <InteractiveChart />
               </div>
+            </div>
+
+            {/* Control Buttons */}
+            <div className="grid grid-cols-2 gap-4 mt-2">
+              <Card className="p-2 bg-gradient-to-br from-blue-50 to-white border border-blue-100">
+                <Button
+                  variant={isAutoPlay ? "default" : "outline"}
+                  className={`w-full h-12 flex items-center justify-center gap-2 ${isAutoPlay ? "bg-green-600 hover:bg-green-700" : ""}`}
+                  onClick={handleAutoPlayToggle}
+                >
+                  <Play
+                    className={`h-5 w-5 ${isAutoPlay ? "animate-pulse" : ""}`}
+                  />
+                  <span>Autoplay {isAutoPlay ? "ON" : "OFF"}</span>
+                </Button>
+              </Card>
+              <Card className="p-2 bg-gradient-to-br from-red-50 to-white border border-red-100">
+                <Button
+                  variant={isHardStop ? "destructive" : "outline"}
+                  className={`w-full h-12 flex items-center justify-center gap-2 ${isHardStop ? "animate-pulse" : ""}`}
+                  onClick={handleHardStopToggle}
+                >
+                  <Power className="h-5 w-5" />
+                  <span>Hard Stop {isHardStop ? "ON" : "OFF"}</span>
+                </Button>
+              </Card>
             </div>
           </div>
         </div>

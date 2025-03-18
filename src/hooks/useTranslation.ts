@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useLanguage } from "../context/LanguageContext";
 
 type Translations = {
   [key: string]: {
@@ -69,6 +69,20 @@ const translations: Translations = {
     "Historical Data": "Historical Data",
     Temperature: "Temperature",
     Humidity: "Humidity",
+    "Language Changed": "Language Changed",
+    "The interface language has been updated successfully.":
+      "The interface language has been updated successfully.",
+    "Door Opened": "Door Opened",
+    "Door has been opened. All devices have been stopped for safety. Close the door to resume operation.":
+      "Door has been opened. All devices have been stopped for safety. Close the door to resume operation.",
+    "System Notifications": "System Notifications",
+    "Dismiss All": "Dismiss All",
+    "No active notifications": "No active notifications",
+    "System Overview": "System Overview",
+    "Detailed Data Analysis": "Detailed Data Analysis",
+    Save: "Save",
+    Export: "Export",
+    Notifications: "Notifications",
   },
   fr: {
     "Tobacco Drying Room Control System":
@@ -132,6 +146,20 @@ const translations: Translations = {
     "Historical Data": "Données Historiques",
     Temperature: "Température",
     Humidity: "Humidité",
+    "Language Changed": "Langue Modifiée",
+    "The interface language has been updated successfully.":
+      "La langue de l'interface a été mise à jour avec succès.",
+    "Door Opened": "Porte Ouverte",
+    "Door has been opened. All devices have been stopped for safety. Close the door to resume operation.":
+      "La porte a été ouverte. Tous les appareils ont été arrêtés par sécurité. Fermez la porte pour reprendre le fonctionnement.",
+    "System Notifications": "Notifications Système",
+    "Dismiss All": "Tout Ignorer",
+    "No active notifications": "Aucune notification active",
+    "System Overview": "Aperçu du Système",
+    "Detailed Data Analysis": "Analyse Détaillée des Données",
+    Save: "Sauvegarder",
+    Export: "Exporter",
+    Notifications: "Notifications",
   },
   ar: {
     "Tobacco Drying Room Control System": "نظام التحكم في غرفة تجفيف التبغ",
@@ -194,30 +222,25 @@ const translations: Translations = {
     "Historical Data": "البيانات التاريخية",
     Temperature: "درجة الحرارة",
     Humidity: "الرطوبة",
+    "Language Changed": "تم تغيير اللغة",
+    "The interface language has been updated successfully.":
+      "تم تحديث لغة الواجهة بنجاح.",
+    "Door Opened": "الباب مفتوح",
+    "Door has been opened. All devices have been stopped for safety. Close the door to resume operation.":
+      "تم فتح الباب. تم إيقاف جميع الأجهزة للسلامة. أغلق الباب لاستئناف التشغيل.",
+    "System Notifications": "إشعارات النظام",
+    "Dismiss All": "تجاهل الكل",
+    "No active notifications": "لا توجد إشعارات نشطة",
+    "System Overview": "نظرة عامة على النظام",
+    "Detailed Data Analysis": "تحليل مفصل للبيانات",
+    Save: "حفظ",
+    Export: "تصدير",
+    Notifications: "الإشعارات",
   },
 };
 
 export const useTranslation = () => {
-  const [language, setLanguage] = useState(() => {
-    // Try to get the language from localStorage
-    const savedLanguage = localStorage.getItem("language");
-    return savedLanguage || "en";
-  });
-
-  useEffect(() => {
-    // Save the language preference to localStorage
-    localStorage.setItem("language", language);
-
-    // Set the dir attribute on the document for RTL languages
-    document.documentElement.dir = language === "ar" ? "rtl" : "ltr";
-
-    // Add a class to the body for RTL-specific styling
-    if (language === "ar") {
-      document.body.classList.add("rtl");
-    } else {
-      document.body.classList.remove("rtl");
-    }
-  }, [language]);
+  const { language, setLanguage } = useLanguage();
 
   const t = (key: string): string => {
     if (!translations[language]) {
