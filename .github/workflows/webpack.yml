@@ -12,22 +12,21 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 18.x, 20.x, 22.x]
+        node-version: [18.x, 20.x, 22.x]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
-    - name: Set up Node.js ${{ matrix.node-version }}
+    - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Install dependencies
+    - name: Install Dependencies
       run: npm install
 
     - name: Install webpack-cli
       run: npm install -D webpack-cli
 
-    - name: Build with webpack
-      run: npm run build
+    - name: Build
+      run: npx webpack
