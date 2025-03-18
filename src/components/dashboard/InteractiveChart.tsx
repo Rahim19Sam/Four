@@ -215,6 +215,7 @@ const InteractiveChart: React.FC<InteractiveChartProps> = ({
                 borderRadius: 4,
                 barPercentage: 0.8,
                 categoryPercentage: 0.7,
+                type: "bar",
               };
             },
           );

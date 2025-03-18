@@ -4,7 +4,7 @@ import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Dialog, DialogContent } from "../ui/dialog";
-import { Eye, Bell, X, BarChart3 } from "lucide-react";
+import { Eye, Bell, X, BarChart3, Play, Power } from "lucide-react";
 import InteractiveChart from "./InteractiveChart";
 import NotificationCenter, { AlertItem } from "./NotificationCenter";
 import { useTranslation } from "../../hooks/useTranslation";
@@ -235,11 +235,34 @@ const RoomGrid = () => {
 
                 <Button
                   onClick={() => navigateToRoom(room.id)}
-                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 hover:shadow-md transform hover:scale-105"
+                  className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white transition-all duration-300 hover:shadow-md transform hover:scale-105 mb-4"
                 >
                   <Eye className="h-4 w-4 animate-pulse" />
                   {t("View Details")}
                 </Button>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Card className="p-2 bg-gradient-to-br from-blue-50 to-white border border-blue-100">
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 flex items-center justify-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300"
+                      onClick={() => {}}
+                    >
+                      <Play className="h-4 w-4" />
+                      <span className="text-sm">{t("Auto Start")}</span>
+                    </Button>
+                  </Card>
+                  <Card className="p-2 bg-gradient-to-br from-red-50 to-white border border-red-100">
+                    <Button
+                      variant="outline"
+                      className="w-full h-10 flex items-center justify-center gap-2 hover:bg-red-50 hover:text-red-600 transition-all duration-300"
+                      onClick={() => {}}
+                    >
+                      <Power className="h-4 w-4" />
+                      <span className="text-sm">{t("Emergency Stop")}</span>
+                    </Button>
+                  </Card>
+                </div>
               </div>
             </CardContent>
           </Card>
