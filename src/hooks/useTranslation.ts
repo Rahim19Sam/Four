@@ -83,6 +83,12 @@ const translations: Translations = {
     Save: "Save",
     Export: "Export",
     Notifications: "Notifications",
+    Autoplay: "Autoplay",
+    "Hard Stop": "Hard Stop",
+    "Autoplay Activated": "Autoplay Activated",
+    "Automatic mode has been activated. The system will maintain target conditions.":
+      "Automatic mode has been activated. The system will maintain target conditions.",
+    "System Alert": "System Alert",
   },
   fr: {
     "Tobacco Drying Room Control System":
@@ -160,6 +166,12 @@ const translations: Translations = {
     Save: "Sauvegarder",
     Export: "Exporter",
     Notifications: "Notifications",
+    Autoplay: "Lecture automatique",
+    "Hard Stop": "Arrêt d'urgence",
+    "Autoplay Activated": "Lecture automatique activée",
+    "Automatic mode has been activated. The system will maintain target conditions.":
+      "Le mode automatique a été activé. Le système maintiendra les conditions cibles.",
+    "System Alert": "Alerte Système",
   },
   ar: {
     "Tobacco Drying Room Control System": "نظام التحكم في غرفة تجفيف التبغ",
@@ -236,6 +248,12 @@ const translations: Translations = {
     Save: "حفظ",
     Export: "تصدير",
     Notifications: "الإشعارات",
+    Autoplay: "تشغيل تلقائي",
+    "Hard Stop": "إيقاف طارئ",
+    "Autoplay Activated": "تم تنشيط التشغيل التلقائي",
+    "Automatic mode has been activated. The system will maintain target conditions.":
+      "تم تنشيط الوضع التلقائي. سيحافظ النظام على الظروف المستهدفة.",
+    "System Alert": "تنبيه النظام",
   },
 };
 

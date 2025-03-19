@@ -46,7 +46,7 @@ const ControlPanel = ({
   // Effect to handle automatic mode
   useEffect(() => {
     if (!isManualMode) {
-      // In automatic mode, activate all heaters and air dryer
+      // In automatic mode, activate all heaters and air dryer, but not fans
       const newHeaters = [true, true, true, true];
       setHeaters(newHeaters);
       setAirDryer(true);

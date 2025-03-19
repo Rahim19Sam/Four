@@ -7,6 +7,8 @@ import MonitoringPanel from "./MonitoringPanel";
 import ControlPanel from "./ControlPanel";
 import OperationModeSelector from "./OperationModeSelector";
 import InteractiveChart from "./InteractiveChart";
+import AlertNotification from "./AlertNotification";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface RoomCardProps {
   roomId: string;
@@ -23,11 +25,18 @@ const RoomCard = ({
   onFullScreenChart = () => {},
   onAlertChange = () => {},
 }: RoomCardProps) => {
+  const { t } = useTranslation();
   const [operationMode, setOperationMode] = useState<"manual" | "automatic">(
     "manual",
   );
   const [isAutoPlay, setIsAutoPlay] = useState(false);
   const [isHardStop, setIsHardStop] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertInfo, setAlertInfo] = useState({
+    title: "System Alert",
+    message: "",
+    type: "info" as "warning" | "error" | "info",
+  });
 
   // Load data from localStorage on component mount
   React.useEffect(() => {
@@ -144,6 +153,17 @@ const RoomCard = ({
     setIsAutoPlay(newAutoPlayState);
     if (newAutoPlayState) {
       setIsHardStop(false);
+      // Set operation mode to automatic when autoplay is turned on
+      setOperationMode("automatic");
+
+      // Show confirmation alert
+      setAlertInfo({
+        title: "Autoplay Activated",
+        message:
+          "Automatic mode has been activated. The system will maintain target conditions.",
+        type: "info",
+      });
+      setShowAlert(true);
     }
     saveRoomData();
   };
@@ -153,12 +173,37 @@ const RoomCard = ({
     setIsHardStop(newHardStopState);
     if (newHardStopState) {
       setIsAutoPlay(false);
+      setOperationMode("manual");
+
+      // Show emergency alert
+      setAlertInfo({
+        title: "Emergency Stop Activated",
+        message:
+          "All systems have been shut down. Please check the equipment before restarting.",
+        type: "error",
+      });
+      setShowAlert(true);
     }
     saveRoomData();
   };
 
+  const handleAlertClose = () => {
+    setShowAlert(false);
+  };
+
   return (
-    <Card className="w-full h-full overflow-hidden bg-gradient-to-br from-white to-gray-50 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100">
+    <Card className="w-full h-full overflow-hidden bg-gradient-to-br from-white to-gray-50 shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 relative">
+      {showAlert && (
+        <div className="absolute top-4 right-4 z-50">
+          <AlertNotification
+            title={alertInfo.title}
+            message={alertInfo.message}
+            type={alertInfo.type}
+            onClose={handleAlertClose}
+            isVisible={showAlert}
+          />
+        </div>
+      )}
       <CardHeader className="pb-2 border-b">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
@@ -220,7 +265,11 @@ const RoomCard = ({
 
             {/* Control Panel */}
             <div className="h-[240px] overflow-auto">
-              <ControlPanel isManualMode={operationMode === "manual"} />
+              <ControlPanel
+                isManualMode={operationMode === "manual"}
+                isDoorOpen={false}
+                isEmergencyStop={isHardStop}
+              />
             </div>
           </div>
 
@@ -269,7 +318,9 @@ const RoomCard = ({
                   <Play
                     className={`h-5 w-5 ${isAutoPlay ? "animate-pulse" : ""}`}
                   />
-                  <span>Autoplay {isAutoPlay ? "ON" : "OFF"}</span>
+                  <span>
+                    {t("Autoplay")} {isAutoPlay ? t("ON") : t("OFF")}
+                  </span>
                 </Button>
               </Card>
               <Card className="p-2 bg-gradient-to-br from-red-50 to-white border border-red-100">
@@ -279,7 +330,9 @@ const RoomCard = ({
                   onClick={handleHardStopToggle}
                 >
                   <Power className="h-5 w-5" />
-                  <span>Hard Stop {isHardStop ? "ON" : "OFF"}</span>
+                  <span>
+                    {t("Hard Stop")} {isHardStop ? t("ON") : t("OFF")}
+                  </span>
                 </Button>
               </Card>
             </div>
