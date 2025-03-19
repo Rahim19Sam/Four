@@ -246,9 +246,52 @@ const RoomGrid = () => {
                     <Button
                       variant="outline"
                       className="w-full h-10 flex items-center justify-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300"
-                      onClick={() => {}}
+                      onClick={() => {
+                        // Set auto mode for this room
+                        const roomData = localStorage.getItem(
+                          `room-${room.id}`,
+                        );
+                        if (roomData) {
+                          try {
+                            const parsedData = JSON.parse(roomData);
+                            const updatedData = {
+                              ...parsedData,
+                              operationMode: "automatic",
+                              isAutoPlay: true,
+                              isHardStop: false,
+                            };
+                            localStorage.setItem(
+                              `room-${room.id}`,
+                              JSON.stringify(updatedData),
+                            );
+
+                            // Update device states
+                            const savedDeviceStates = localStorage.getItem(
+                              `${room.id}-device-states`,
+                            );
+                            const deviceStates = savedDeviceStates
+                              ? JSON.parse(savedDeviceStates)
+                              : {};
+                            const updatedStates = {
+                              ...deviceStates,
+                              heaters: [true, true, true, true],
+                              airDryer: true,
+                              // fans remain unchanged
+                            };
+                            localStorage.setItem(
+                              `${room.id}-device-states`,
+                              JSON.stringify(updatedStates),
+                            );
+
+                            // Force refresh
+                            navigate(`/room/${room.id}`);
+                          } catch (e) {
+                            console.error("Error updating room data", e);
+                          }
+                        }
+                      }}
                     >
-                      <Play className="h-4 w-4" />
+                      <Play className="h-4 w-4 transition-all duration-300 hover:scale-110 hover:animate-pulse" />
                       <span className="text-sm">{t("Auto Start")}</span>
                     </Button>
                   </Card>
@@ -256,9 +299,52 @@ const RoomGrid = () => {
                     <Button
                       variant="outline"
                       className="w-full h-10 flex items-center justify-center gap-2 hover:bg-red-50 hover:text-red-600 transition-all duration-300"
-                      onClick={() => {}}
+                      onClick={() => {
+                        // Set emergency stop for this room
+                        const roomData = localStorage.getItem(
+                          `room-${room.id}`,
+                        );
+                        if (roomData) {
+                          try {
+                            const parsedData = JSON.parse(roomData);
+                            const updatedData = {
+                              ...parsedData,
+                              operationMode: "manual",
+                              isAutoPlay: false,
+                              isHardStop: true,
+                            };
+                            localStorage.setItem(
+                              `room-${room.id}`,
+                              JSON.stringify(updatedData),
+                            );
+
+                            // Update device states
+                            const savedDeviceStates = localStorage.getItem(
+                              `${room.id}-device-states`,
+                            );
+                            const deviceStates = savedDeviceStates
+                              ? JSON.parse(savedDeviceStates)
+                              : {};
+                            const updatedStates = {
+                              ...deviceStates,
+                              heaters: [false, false, false, false],
+                              airDryer: false,
+                              fans: [false, false],
+                            };
+                            localStorage.setItem(
+                              `${room.id}-device-states`,
+                              JSON.stringify(updatedStates),
+                            );
+
+                            // Force refresh
+                            navigate(`/room/${room.id}`);
+                          } catch (e) {
+                            console.error("Error updating room data", e);
+                          }
+                        }
+                      }}
                     >
-                      <Power className="h-4 w-4" />
+                      <Power className="h-4 w-4 transition-all duration-300 hover:scale-110 hover:text-red-600" />
                       <span className="text-sm">{t("Emergency Stop")}</span>
                     </Button>
                   </Card>

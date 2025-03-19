@@ -40,6 +40,9 @@ const RoomCard = ({
 
   // Load data from localStorage on component mount
   React.useEffect(() => {
+    // Store current room ID for device state persistence
+    localStorage.setItem("currentRoomId", roomId);
+
     const savedData = localStorage.getItem(`room-${roomId}`);
     if (savedData) {
       try {
@@ -160,10 +163,31 @@ const RoomCard = ({
       setAlertInfo({
         title: "Autoplay Activated",
         message:
-          "Automatic mode has been activated. The system will maintain target conditions.",
+          "Automatic mode has been activated. The system will maintain target conditions. Fan settings will remain unchanged.",
         type: "info",
       });
       setShowAlert(true);
+
+      // Load current device states to preserve fan settings
+      const savedDeviceStates = localStorage.getItem(`${roomId}-device-states`);
+      if (savedDeviceStates) {
+        try {
+          const parsedStates = JSON.parse(savedDeviceStates);
+          // Keep fan settings unchanged when switching to automatic mode
+          const updatedStates = {
+            ...parsedStates,
+            heaters: [true, true, true, true],
+            airDryer: true,
+            // fans remain unchanged
+          };
+          localStorage.setItem(
+            `${roomId}-device-states`,
+            JSON.stringify(updatedStates),
+          );
+        } catch (e) {
+          console.error("Error updating device states", e);
+        }
+      }
     }
     saveRoomData();
   };
@@ -228,7 +252,7 @@ const RoomCard = ({
                 createBackup();
               }}
             >
-              <Save className="h-3 w-3" />
+              <Save className="h-3 w-3 transition-all duration-300 hover:scale-125 hover:text-blue-600" />
               Save Data
             </Button>
             <Button
@@ -237,7 +261,7 @@ const RoomCard = ({
               className="flex items-center gap-1 text-xs hover:bg-amber-50 hover:text-amber-600 transition-colors"
               onClick={loadBackup}
             >
-              <Upload className="h-3 w-3" />
+              <Upload className="h-3 w-3 transition-all duration-300 hover:scale-125 hover:text-amber-600" />
               Load Backup
             </Button>
             <Button
@@ -246,7 +270,7 @@ const RoomCard = ({
               className="flex items-center gap-1 text-xs hover:bg-green-50 hover:text-green-600 transition-colors"
               onClick={exportData}
             >
-              <Download className="h-3 w-3" />
+              <Download className="h-3 w-3 transition-all duration-300 hover:scale-125 hover:text-green-600" />
               Export CSV
             </Button>
           </div>
@@ -316,7 +340,7 @@ const RoomCard = ({
                   onClick={handleAutoPlayToggle}
                 >
                   <Play
-                    className={`h-5 w-5 ${isAutoPlay ? "animate-pulse" : ""}`}
+                    className={`h-5 w-5 transition-all duration-300 ${isAutoPlay ? "animate-pulse scale-110" : ""}`}
                   />
                   <span>
                     {t("Autoplay")} {isAutoPlay ? t("ON") : t("OFF")}
@@ -329,7 +353,9 @@ const RoomCard = ({
                   className={`w-full h-12 flex items-center justify-center gap-2 ${isHardStop ? "animate-pulse" : ""}`}
                   onClick={handleHardStopToggle}
                 >
-                  <Power className="h-5 w-5" />
+                  <Power
+                    className={`h-5 w-5 transition-all duration-300 ${isHardStop ? "animate-pulse scale-110" : ""}`}
+                  />
                   <span>
                     {t("Hard Stop")} {isHardStop ? t("ON") : t("OFF")}
                   </span>

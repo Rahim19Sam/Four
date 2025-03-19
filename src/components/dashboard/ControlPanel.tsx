@@ -43,6 +43,27 @@ const ControlPanel = ({
   const [targetHumidity, setTargetHumidity] = useState(45);
   const [dryingTime, setDryingTime] = useState(24);
 
+  // Load saved device states from localStorage on component mount
+  useEffect(() => {
+    const roomId = localStorage.getItem("currentRoomId");
+    if (roomId) {
+      const savedDeviceStates = localStorage.getItem(`${roomId}-device-states`);
+      if (savedDeviceStates) {
+        try {
+          const parsedStates = JSON.parse(savedDeviceStates);
+          setHeaters(parsedStates.heaters || [false, false, false, false]);
+          setAirDryer(parsedStates.airDryer || false);
+          setFans(parsedStates.fans || [false, false]);
+          setTargetTemp(parsedStates.targetTemp || 60);
+          setTargetHumidity(parsedStates.targetHumidity || 45);
+          setDryingTime(parsedStates.dryingTime || 24);
+        } catch (e) {
+          console.error("Error loading saved device states", e);
+        }
+      }
+    }
+  }, []);
+
   // Effect to handle automatic mode
   useEffect(() => {
     if (!isManualMode) {
@@ -59,8 +80,30 @@ const ControlPanel = ({
 
       // Sync timer with drying time
       onTimerSync(dryingTime);
+
+      // Save the current state to localStorage
+      saveDeviceStates();
     }
   }, [isManualMode, dryingTime, onHeaterToggle, onAirDryerToggle, onTimerSync]);
+
+  // Save device states to localStorage
+  const saveDeviceStates = () => {
+    const roomId = localStorage.getItem("currentRoomId");
+    if (roomId) {
+      const deviceStates = {
+        heaters,
+        airDryer,
+        fans,
+        targetTemp,
+        targetHumidity,
+        dryingTime,
+      };
+      localStorage.setItem(
+        `${roomId}-device-states`,
+        JSON.stringify(deviceStates),
+      );
+    }
+  };
 
   // Effect to handle door open or emergency stop
   useEffect(() => {
@@ -96,6 +139,7 @@ const ControlPanel = ({
     newHeaters[index] = !newHeaters[index];
     setHeaters(newHeaters);
     onHeaterToggle(index, newHeaters[index]);
+    saveDeviceStates();
   };
 
   // Handle air dryer toggle
@@ -104,6 +148,7 @@ const ControlPanel = ({
 
     setAirDryer(!airDryer);
     onAirDryerToggle(!airDryer);
+    saveDeviceStates();
   };
 
   // Handle fan toggle
@@ -114,18 +159,21 @@ const ControlPanel = ({
     newFans[index] = !newFans[index];
     setFans(newFans);
     onFanToggle(index, newFans[index]);
+    saveDeviceStates();
   };
 
   // Handle target temperature change
   const handleTargetTempChange = (value: number) => {
     setTargetTemp(value);
     onTargetTempChange(value);
+    saveDeviceStates();
   };
 
   // Handle target humidity change
   const handleTargetHumidityChange = (value: number) => {
     setTargetHumidity(value);
     onTargetHumidityChange(value);
+    saveDeviceStates();
   };
 
   // Handle drying time change
@@ -133,6 +181,7 @@ const ControlPanel = ({
     setDryingTime(value);
     onDryingTimeChange(value);
     onTimerSync(value);
+    saveDeviceStates();
   };
 
   return (
@@ -160,7 +209,7 @@ const ControlPanel = ({
             className={`${!isManualMode || isDoorOpen || isEmergencyStop ? "opacity-50 pointer-events-none" : ""}`}
           >
             <h3 className="text-lg font-medium mb-4">{t("Manual Controls")}</h3>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Heaters */}
               <div className="space-y-3">
                 <p className="text-base font-medium">{t("Heaters")}</p>
@@ -174,7 +223,7 @@ const ControlPanel = ({
                       className={`flex items-center justify-center gap-2 h-14 transition-all duration-300 hover:scale-105 ${active ? "bg-orange-500 hover:bg-orange-600" : ""}`}
                     >
                       <Thermometer
-                        className={`h-5 w-5 transition-transform duration-300 ${active ? "text-white animate-pulse" : "text-orange-500"}`}
+                        className={`h-5 w-5 transition-all duration-300 ${active ? "text-white animate-pulse scale-110" : "text-orange-500"}`}
                       />
                       <span className="text-base">
                         {t("Heater")} {index + 1}
@@ -194,35 +243,40 @@ const ControlPanel = ({
                   className={`flex items-center justify-center gap-2 h-14 w-full transition-all duration-300 hover:scale-105 ${airDryer ? "bg-blue-500 hover:bg-blue-600" : ""}`}
                 >
                   <Droplets
-                    className={`h-5 w-5 transition-transform duration-300 ${airDryer ? "text-white animate-pulse" : "text-blue-500"}`}
+                    className={`h-5 w-5 transition-all duration-300 ${airDryer ? "text-white animate-pulse scale-110" : "text-blue-500"}`}
                   />
                   <span className="text-base">
                     {airDryer ? t("ON") : t("OFF")}
                   </span>
                 </Button>
               </div>
+            </div>
 
-              {/* Fans */}
-              <div className="space-y-3">
-                <p className="text-base font-medium">{t("Fans")}</p>
-                <div className="grid grid-cols-2 gap-2">
-                  {fans.map((active, index) => (
-                    <Button
-                      key={`fan-${index}`}
-                      variant={active ? "default" : "outline"}
-                      size="lg"
-                      onClick={() => handleFanToggle(index)}
-                      className={`flex items-center justify-center gap-2 h-14 transition-all duration-300 hover:scale-105 group ${active ? "bg-cyan-500 hover:bg-cyan-600" : ""}`}
-                    >
+            {/* Fans - Isolated */}
+            <div className="mt-6 p-4 bg-gradient-to-br from-cyan-50 to-white rounded-lg border border-cyan-100">
+              <p className="text-base font-medium mb-3">{t("Fans")}</p>
+              <div className="grid grid-cols-2 gap-4">
+                {fans.map((active, index) => (
+                  <Button
+                    key={`fan-${index}`}
+                    variant={active ? "default" : "outline"}
+                    size="lg"
+                    onClick={() => handleFanToggle(index)}
+                    className={`flex items-center justify-center gap-2 h-16 transition-all duration-300 hover:scale-105 ${active ? "bg-cyan-500 hover:bg-cyan-600" : "border-cyan-300"}`}
+                  >
+                    <div className="relative">
                       <Fan
-                        className={`h-5 w-5 transition-transform duration-300 ${active ? "text-white animate-spin-slow" : "text-cyan-500"}`}
+                        className={`h-6 w-6 transition-all duration-300 ${active ? "text-white animate-spin" : "text-cyan-500"}`}
                       />
-                      <span className="text-base">
-                        {t("Fan")} {index + 1}
-                      </span>
-                    </Button>
-                  ))}
-                </div>
+                      {active && (
+                        <div className="absolute -inset-1 bg-cyan-300 rounded-full opacity-30 animate-ping"></div>
+                      )}
+                    </div>
+                    <span className="text-base font-medium">
+                      {t("Fan")} {index + 1}
+                    </span>
+                  </Button>
+                ))}
               </div>
             </div>
           </div>
