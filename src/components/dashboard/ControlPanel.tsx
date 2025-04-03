@@ -41,7 +41,7 @@ const ControlPanel = ({
   // State for target parameters
   const [targetTemp, setTargetTemp] = useState(60);
   const [targetHumidity, setTargetHumidity] = useState(45);
-  const [dryingTime, setDryingTime] = useState(24);
+  const [dryingTime, setDryingTime] = useState(1440); // Changed to minutes (24 hours * 60)
 
   // Load saved device states from localStorage on component mount
   useEffect(() => {
@@ -78,8 +78,8 @@ const ControlPanel = ({
       });
       onAirDryerToggle(true);
 
-      // Sync timer with drying time
-      onTimerSync(dryingTime);
+      // Sync timer with drying time (convert minutes to hours)
+      onTimerSync(dryingTime / 60);
 
       // Save the current state to localStorage
       saveDeviceStates();
@@ -180,13 +180,13 @@ const ControlPanel = ({
   const handleDryingTimeChange = (value: number) => {
     setDryingTime(value);
     onDryingTimeChange(value);
-    onTimerSync(value);
+    onTimerSync(value / 60); // Convert minutes to hours for timer sync
     saveDeviceStates();
   };
 
   return (
     <Card className="w-full h-full bg-white border border-gray-100 shadow-sm">
-      <CardHeader>
+      <CardHeader className="pb-2">
         <CardTitle className="text-xl font-bold flex items-center">
           <Thermometer className="mr-2 h-5 w-5 text-orange-500" />
           {t("Control Panel")}
@@ -203,29 +203,34 @@ const ControlPanel = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-8">
-          {/* Manual Controls Section */}
+        <div className="space-y-4">
+          {/* Manual Controls Section - Enlarged */}
           <div
             className={`${!isManualMode || isDoorOpen || isEmergencyStop ? "opacity-50 pointer-events-none" : ""}`}
           >
-            <h3 className="text-lg font-medium mb-4">{t("Manual Controls")}</h3>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <h3 className="text-lg font-medium mb-3">{t("Manual Controls")}</h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
               {/* Heaters */}
-              <div className="space-y-3">
+              <div className="space-y-2 p-4 bg-gradient-to-br from-orange-50 to-white rounded-lg border border-orange-100">
                 <p className="text-base font-medium">{t("Heaters")}</p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   {heaters.map((active, index) => (
                     <Button
                       key={`heater-${index}`}
                       variant={active ? "default" : "outline"}
                       size="lg"
                       onClick={() => handleHeaterToggle(index)}
-                      className={`flex items-center justify-center gap-2 h-14 transition-all duration-300 hover:scale-105 ${active ? "bg-orange-500 hover:bg-orange-600" : ""}`}
+                      className={`flex items-center justify-center gap-2 h-16 transition-all duration-300 hover:scale-105 ${active ? "bg-orange-500 hover:bg-orange-600" : "border-orange-300"}`}
                     >
-                      <Thermometer
-                        className={`h-5 w-5 transition-all duration-300 ${active ? "text-white animate-pulse scale-110" : "text-orange-500"}`}
-                      />
-                      <span className="text-base">
+                      <div className="relative">
+                        <Thermometer
+                          className={`h-6 w-6 transition-all duration-300 ${active ? "text-white animate-pulse scale-110" : "text-orange-500"}`}
+                        />
+                        {active && (
+                          <div className="absolute -inset-1 bg-orange-300 rounded-full opacity-30 animate-ping"></div>
+                        )}
+                      </div>
+                      <span className="text-base font-medium">
                         {t("Heater")} {index + 1}
                       </span>
                     </Button>
@@ -234,61 +239,66 @@ const ControlPanel = ({
               </div>
 
               {/* Air Dryer */}
-              <div className="space-y-3">
+              <div className="space-y-2 p-4 bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-100">
                 <p className="text-base font-medium">{t("Air Dryer")}</p>
                 <Button
                   variant={airDryer ? "default" : "outline"}
                   size="lg"
                   onClick={handleAirDryerToggle}
-                  className={`flex items-center justify-center gap-2 h-14 w-full transition-all duration-300 hover:scale-105 ${airDryer ? "bg-blue-500 hover:bg-blue-600" : ""}`}
+                  className={`flex items-center justify-center gap-2 h-16 w-full transition-all duration-300 hover:scale-105 ${airDryer ? "bg-blue-500 hover:bg-blue-600" : "border-blue-300"}`}
                 >
-                  <Droplets
-                    className={`h-5 w-5 transition-all duration-300 ${airDryer ? "text-white animate-pulse scale-110" : "text-blue-500"}`}
-                  />
-                  <span className="text-base">
+                  <div className="relative">
+                    <Droplets
+                      className={`h-6 w-6 transition-all duration-300 ${airDryer ? "text-white animate-pulse scale-110" : "text-blue-500"}`}
+                    />
+                    {airDryer && (
+                      <div className="absolute -inset-1 bg-blue-300 rounded-full opacity-30 animate-ping"></div>
+                    )}
+                  </div>
+                  <span className="text-base font-medium">
                     {airDryer ? t("ON") : t("OFF")}
                   </span>
                 </Button>
               </div>
-            </div>
 
-            {/* Fans - Isolated */}
-            <div className="mt-6 p-4 bg-gradient-to-br from-cyan-50 to-white rounded-lg border border-cyan-100">
-              <p className="text-base font-medium mb-3">{t("Fans")}</p>
-              <div className="grid grid-cols-2 gap-4">
-                {fans.map((active, index) => (
-                  <Button
-                    key={`fan-${index}`}
-                    variant={active ? "default" : "outline"}
-                    size="lg"
-                    onClick={() => handleFanToggle(index)}
-                    className={`flex items-center justify-center gap-2 h-16 transition-all duration-300 hover:scale-105 ${active ? "bg-cyan-500 hover:bg-cyan-600" : "border-cyan-300"}`}
-                  >
-                    <div className="relative">
-                      <Fan
-                        className={`h-6 w-6 transition-all duration-300 ${active ? "text-white animate-spin" : "text-cyan-500"}`}
-                      />
-                      {active && (
-                        <div className="absolute -inset-1 bg-cyan-300 rounded-full opacity-30 animate-ping"></div>
-                      )}
-                    </div>
-                    <span className="text-base font-medium">
-                      {t("Fan")} {index + 1}
-                    </span>
-                  </Button>
-                ))}
+              {/* Fans - Isolated */}
+              <div className="space-y-2 p-4 bg-gradient-to-br from-cyan-50 to-white rounded-lg border border-cyan-100">
+                <p className="text-base font-medium">{t("Fans")}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  {fans.map((active, index) => (
+                    <Button
+                      key={`fan-${index}`}
+                      variant={active ? "default" : "outline"}
+                      size="lg"
+                      onClick={() => handleFanToggle(index)}
+                      className={`flex items-center justify-center gap-2 h-16 transition-all duration-300 hover:scale-105 ${active ? "bg-cyan-500 hover:bg-cyan-600" : "border-cyan-300"}`}
+                    >
+                      <div className="relative">
+                        <Fan
+                          className={`h-6 w-6 transition-all duration-300 ${active ? "text-white animate-spin" : "text-cyan-500"}`}
+                        />
+                        {active && (
+                          <div className="absolute -inset-1 bg-cyan-300 rounded-full opacity-30 animate-ping"></div>
+                        )}
+                      </div>
+                      <span className="text-base font-medium">
+                        {t("Fan")} {index + 1}
+                      </span>
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
 
           {/* Target Parameters Section */}
           <div>
-            <h3 className="text-lg font-medium mb-4">
+            <h3 className="text-lg font-medium mb-3">
               {t("Target Parameters")}
             </h3>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               {/* Target Temperature */}
-              <div className="space-y-3 p-4 bg-gradient-to-br from-orange-50 to-white rounded-lg border border-orange-100">
+              <div className="space-y-2 p-4 bg-gradient-to-br from-orange-50 to-white rounded-lg border border-orange-100">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
                     <Thermometer className="h-5 w-5 text-orange-500 mr-2" />
@@ -326,7 +336,7 @@ const ControlPanel = ({
               </div>
 
               {/* Target Humidity */}
-              <div className="space-y-3 p-4 bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-100">
+              <div className="space-y-2 p-4 bg-gradient-to-br from-blue-50 to-white rounded-lg border border-blue-100">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
                     <Droplets className="h-5 w-5 text-blue-500 mr-2" />
@@ -365,23 +375,23 @@ const ControlPanel = ({
                 </div>
               </div>
 
-              {/* Drying Time */}
-              <div className="space-y-3 p-4 bg-gradient-to-br from-amber-50 to-white rounded-lg border border-amber-100">
+              {/* Drying Time - Changed to minutes */}
+              <div className="space-y-2 p-4 bg-gradient-to-br from-amber-50 to-white rounded-lg border border-amber-100">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
                     <Clock className="h-5 w-5 text-amber-500 mr-2" />
                     <p className="text-base font-medium">{t("Drying Time")}</p>
                   </div>
                   <p className="text-lg font-bold text-amber-600">
-                    {dryingTime} {t("hours")}
+                    {dryingTime} {t("minutes")}
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
                   <Slider
                     value={[dryingTime]}
-                    min={1}
-                    max={72}
-                    step={1}
+                    min={60}
+                    max={4320}
+                    step={30}
                     onValueChange={(value) => handleDryingTimeChange(value[0])}
                     className="flex-1"
                   />
@@ -393,12 +403,13 @@ const ControlPanel = ({
                     onChange={(e) =>
                       handleDryingTimeChange(Number(e.target.value))
                     }
-                    min={1}
-                    max={72}
+                    min={60}
+                    max={4320}
+                    step={30}
                     className="w-24 h-10 transition-all duration-300 focus:ring-2 focus:ring-amber-500 focus:scale-105"
                   />
                   <span className="text-base self-center font-medium">
-                    {t("hours")}
+                    {t("minutes")}
                   </span>
                 </div>
               </div>
